@@ -1,1 +1,5 @@
 /build
+/.idea
+/colors.xml
+/version.properties
+/androidDexCompiler.xml
