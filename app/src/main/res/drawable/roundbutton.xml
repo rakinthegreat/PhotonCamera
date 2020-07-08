@@ -9,15 +9,15 @@
 </item>
     <item android:state_pressed="true">
         <shape android:shape="oval">
-            <stroke android:width="4dp" android:color="@android:color/background_light" />
+            <stroke android:width="4dp" android:color="@color/Orange" />
             <solid android:color="@color/Blue" />
             <size android:width="80dp" android:height="80dp"/>
         </shape>
     </item>
     <item android:state_activated="false">
         <shape android:shape="oval">
-            <stroke android:width="4dp" android:color="@color/LightDis" />
-            <solid android:color="@color/GreyDis" />
+            <stroke android:width="4dp" android:color="@color/Orange" />
+            <solid android:color="#fff" />
             <size android:width="80dp" android:height="80dp" />
         </shape>
     </item>
