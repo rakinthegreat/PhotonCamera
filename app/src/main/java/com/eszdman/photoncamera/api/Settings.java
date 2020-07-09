@@ -212,14 +212,14 @@ public class Settings {
         double sizex = size.x;
         double sizey = size.y;
         //captureBuilder.set(CONTROL_AE_TARGET_FPS_RANGE,new Range<>(24,60));
-        MeteringRectangle[] rectm8 = new MeteringRectangle[2];
+        MeteringRectangle rectm8[] = new MeteringRectangle[2];
         rectm8[0] = new MeteringRectangle(new Rect((int)(sizex/3.0),(int)(sizey/3.0),(int)(sizex*2.0/3.0),(int)(sizey*2.0/3.0)),10);
         rectm8[1] = new MeteringRectangle(new Point((int)(sizex/2.0),(int)(sizey/2.0)),new Size((int)(sizex/7),(int)(sizey/7)),30);
         captureBuilder.set(CONTROL_AF_REGIONS,rectm8);
         captureBuilder.set(CONTROL_AE_REGIONS,rectm8);
         captureBuilder.set(CONTROL_AF_MODE, Interface.i.settings.afMode);
         captureBuilder.set(TONEMAP_MODE,TONEMAP_MODE_GAMMA_VALUE);
-        float[] rgb = new float[64];
+        float rgb[] = new float[64];
         for(int i =0; i<64; i+=2){
             float x = ((float)i)/64.f;
             rgb[i] = x;
@@ -272,7 +272,7 @@ public class Settings {
 
     double get(double cur) {
         double result;
-        result = sharedPreferences.getFloat(mCameraID+"Settings:" + count, (float) (cur));
+        result = (double) (sharedPreferences.getFloat(mCameraID+"Settings:" + count, (float) (cur)));
         count++;
         return result;
     }

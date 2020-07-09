@@ -25,7 +25,7 @@ public class GLInterface {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(Interface.i.mainActivity.getResources().openRawResource(fragment)));
         for (Object line : reader.lines().toArray()) {
-            source.append(line +"\n");
+            source.append((String) line+"\n");
         }
         return source.toString();
     }
