@@ -564,15 +564,6 @@ public class CameraFragment extends Fragment
             case R.id.ImageOut: {
                 Photo.instance.ShowPhoto();
             }
-            case R.id.quadRes:{
-                Interface.i.settings.QuadBayer = !Interface.i.settings.QuadBayer;
-                restartCamera();
-                Interface.i.settings.save();
-            }
-            case R.id.eisPhoto:{
-                Interface.i.settings.eisPhoto = !Interface.i.settings.eisPhoto;
-                Interface.i.settings.save();
-            }
         }
     }
 
@@ -588,16 +579,17 @@ public class CameraFragment extends Fragment
         shot = view.findViewById(R.id.picture);
         shot.setOnClickListener(this);
         shot.setActivated(true);
-        CheckBox fpsPreview = view.findViewById(R.id.fpsPreview);
+        ToggleButton fpsPreview = view.findViewById(R.id.fpsPreview);
         fpsPreview.setChecked(Interface.i.settings.fpsPreview);
-        CheckBox quadResolution = view.findViewById(R.id.quadRes);
+        ToggleButton quadResolution = view.findViewById(R.id.quadRes);
         quadResolution.setChecked(Interface.i.settings.QuadBayer);
-        CheckBox eisPhoto = view.findViewById(R.id.eisPhoto);
+        ToggleButton eisPhoto = view.findViewById(R.id.eisPhoto);
         eisPhoto.setChecked(Interface.i.settings.eisPhoto);
         eisPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Interface.i.settings.eisPhoto = !Interface.i.settings.eisPhoto;
+                Interface.i.settings.save();
             }
         });
         fpsPreview.setOnClickListener(new View.OnClickListener() {
@@ -607,8 +599,14 @@ public class CameraFragment extends Fragment
                 Interface.i.settings.save();
             }
         });
-        quadResolution.setOnClickListener(this);
-        eisPhoto.setOnClickListener(this);
+        quadResolution.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Interface.i.settings.QuadBayer = !Interface.i.settings.QuadBayer;
+                Interface.i.settings.save();
+                restartCamera();
+            }
+        });
         ImageButton flip = view.findViewById(R.id.flip_camera);
         flip.setOnClickListener(this);
         Button settings = view.findViewById(R.id.settings);
