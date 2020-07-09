@@ -679,7 +679,7 @@ public class CameraFragment extends Fragment
         in.top *= k;
     }
     private Size getCameraOutputSize(Size[] in) {
-        Collections.sort(Arrays.asList(in), new CompareSizesByArea());
+        Arrays.sort(in, new CompareSizesByArea());
         List<Size> sizes = new ArrayList<>(Arrays.asList(in));
         int s = sizes.size() - 1;
         if (sizes.get(s).getWidth() * sizes.get(s).getHeight() <= 40 * 1000000) {
@@ -696,7 +696,7 @@ public class CameraFragment extends Fragment
     }
      private Size getCameraOutputSize(Size[] in, Size mPreviewSize) {
         if(in == null) return mPreviewSize;
-         Collections.sort(Arrays.asList(in), new CompareSizesByArea());
+         Arrays.sort(in, new CompareSizesByArea());
          List<Size> sizes = new ArrayList<>(Arrays.asList(in));
          int s = sizes.size() - 1;
          if (sizes.get(s).getWidth() * sizes.get(s).getHeight() <= 40 * 1000000 || Interface.i.settings.QuadBayer){
