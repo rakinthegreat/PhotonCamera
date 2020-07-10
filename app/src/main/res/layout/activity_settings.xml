@@ -80,7 +80,7 @@
                     <SeekBar
                         android:id="@+id/setting_framecnt"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="50"
                         android:min="1"
@@ -187,7 +187,7 @@
                     <SeekBar
                         android:id="@+id/setting_chromacnt"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="65"
                         android:min="1"
@@ -211,7 +211,7 @@
                     <SeekBar
                         android:id="@+id/setting_lumacnt"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="65"
                         android:min="1"
@@ -286,7 +286,7 @@
                     <SeekBar
                         android:id="@+id/setting_sharpcnt"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="200"
                         android:min="0"
@@ -309,7 +309,7 @@
                     <SeekBar
                         android:id="@+id/setting_contrmpy"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="200"
                         android:min="0"
@@ -322,7 +322,7 @@
                     <SeekBar
                         android:id="@+id/setting_contrconst"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="1024"
                         android:min="-700"
@@ -346,7 +346,7 @@
                     <SeekBar
                         android:id="@+id/setting_saturation"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="200"
                         android:min="0"
@@ -368,7 +368,7 @@
                     <SeekBar
                         android:id="@+id/setting_compressor"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="200"
                         android:min="50"
@@ -380,7 +380,7 @@
                     <SeekBar
                         android:id="@+id/setting_gain"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="15dp"
                         android:layout_marginStart="30dp"
                         android:max="200"
                         android:min="50"

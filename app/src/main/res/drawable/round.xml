@@ -8,7 +8,7 @@
         android:pathData="M64 0a64 64 0 1 0 0 128A64 64 0 1 0 64 0z"/>
     <group>
         <path
-            android:fillColor="@color/BlueDis"
+            android:fillColor="#999"
             android:pathData="M43.6 47l21.32 31.5H22.3L43.6 47z"/>
         <path
             android:fillColor="#FFA500"
