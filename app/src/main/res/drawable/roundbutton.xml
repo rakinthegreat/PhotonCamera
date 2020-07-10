@@ -3,7 +3,7 @@
     <item android:state_activated="true" android:state_pressed="false" >
         <shape android:shape="oval">
             <stroke android:width="4dp" android:color="@android:color/background_light" />
-            <solid android:color="@android:color/darker_gray" />
+            <solid android:color="#FFA" />
             <size android:width="80dp" android:height="80dp"/>
         </shape>
 </item>
@@ -17,7 +17,7 @@
     <item android:state_activated="false">
         <shape android:shape="oval">
             <stroke android:width="4dp" android:color="@color/Orange" />
-            <solid android:color="#FFA" />
+            <solid android:color="#999" />
             <size android:width="80dp" android:height="80dp" />
         </shape>
     </item>
