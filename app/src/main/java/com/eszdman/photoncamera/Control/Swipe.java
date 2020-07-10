@@ -2,6 +2,7 @@ package com.eszdman.photoncamera.Control;
 import android.annotation.SuppressLint;
 import android.graphics.Paint;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -53,12 +54,12 @@ public class Swipe {
                         if(Interface.i.settings.ManualMode) manualmode.startAnimation(slideDown);
                         Interface.i.settings.ManualMode = false;
                         CameraReflectionApi.set(Interface.i.camera.mPreviewRequest,CaptureRequest.CONTROL_AE_MODE,Interface.i.settings.aeModeOn);
+                        CameraReflectionApi.set(Interface.i.camera.mPreviewRequest, CaptureRequest.CONTROL_AF_MODE,Interface.i.settings.afMode);
                         Interface.i.camera.rebuildPreview();
                         manualmode.setVisibility(View.GONE);
                     } else {
                         Log.d(TAG, "Top");//it swipes from bottom to top
                         if(!Interface.i.settings.ManualMode) manualmode.startAnimation(slideUp);
-                        Interface.i.settings.ManualMode = true;
                         Interface.i.camera.rebuildPreview();
                         manualmode.setVisibility(View.VISIBLE);
                     }
