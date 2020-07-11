@@ -22,9 +22,8 @@
             <shape android:shape="rectangle">
                 <corners android:radius="20dp" />
                 <gradient
-                    android:startColor="@color/Orange"
-                    android:centerColor="#cc3700"
-                    android:endColor="#111"/>
+                    android:endColor="@color/colorAccent"
+                    android:startColor="@color/RedGrad" />
             </shape>
         </clip>
     </item>

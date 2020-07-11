@@ -15,5 +15,5 @@
     <color name="LauncherBackground">#00000000</color>
     <color name="colorText">#FFA500</color>
     <color name="colorSeparator">#616161</color>
-    <color name="Orange">#FFA500</color>
+    <color name="RedGrad">#cc3700</color>
 </resources>

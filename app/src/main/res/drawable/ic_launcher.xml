@@ -4,7 +4,7 @@
     <path android:fillColor="#e0e0e0" android:pathData="M76.54,0H628.46C670.73,0 705,41.84 705,93.45v518.1c0,51.61 -34.27,93.45 -76.54,93.45H76.54C34.27,705 0,663.16 0,611.55V93.45C0,41.84 34.27,0 76.54,0Z"/>
     <path android:fillColor="#fab262" android:pathData="M146.31,73a53.1,53.1 0,0 1,-75.1 75.1"/>
     <path android:fillColor="#56a9cd" android:pathData="M71.21,148.05A53.1,53.1 0,0 1,146.31 73"/>
-    <path android:fillColor="#FFA500" android:pathData="M352.5,352.5m-252,0a252,252 0,1 1,504 0a252,252 0,1 1,-504 0"/>
+    <path android:fillColor="@color/colorAccent" android:pathData="M352.5,352.5m-252,0a252,252 0,1 1,504 0a252,252 0,1 1,-504 0"/>
     <path android:pathData="M352.5,352.5m-252,0a252,252 0,1 1,504 0a252,252 0,1 1,-504 0">
         <aapt:attr name="android:fillColor">
             <gradient android:endX="457.43" android:endY="109.32"

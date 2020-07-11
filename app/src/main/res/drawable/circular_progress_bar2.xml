@@ -13,7 +13,7 @@
             android:angle="0"
             android:type="sweep"
             android:thicknessRatio="39.0">
-            <solid android:color="@color/Orange"/>
+            <solid android:color="@color/colorAccent"/>
         </shape>
 
     </item>

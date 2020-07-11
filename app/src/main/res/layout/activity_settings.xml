@@ -191,7 +191,7 @@
                         android:layout_marginStart="30dp"
                         android:max="65"
                         android:min="1"
-                        android:progress="0"
+                        android:progress="1"
                         android:splitTrack="false"
                         android:progressDrawable="@drawable/custom_seekbar"
                         android:thumbTint="@android:color/transparent"/>
