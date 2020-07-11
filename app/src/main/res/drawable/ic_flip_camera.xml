@@ -24,10 +24,10 @@
     tools:ignore="VectorRaster">
     <path android:fillAlpha="0" android:fillColor="#FFA500"
         android:fillType="evenOdd" android:pathData="M-4,-4h54v54h-54z"
-        android:strokeColor="@color/colorAccent" android:strokeWidth="1"/>
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
     <path android:fillColor="#00000000" android:fillType="evenOdd"
         android:pathData="M23,23m-6.6,0a6.6,6.6 0,1 1,13.2 0a6.6,6.6 0,1 1,-13.2 0"
-        android:strokeColor="@color/colorAccent" android:strokeWidth="2.8"/>
+        android:strokeColor="#FFA500" android:strokeWidth="2.8"/>
     <path android:fillColor="@color/colorAccent" android:fillType="evenOdd"
         android:pathData="M42.923,34.5C38.9462,41.3747 31.5132,46 23,46C10.2975,46 0,35.7025 0,23L2.8,23C2.8,34.1562 11.8438,43.2 23,43.2C29.8831,43.2 35.9621,39.7574 39.6091,34.5L42.923,34.5ZM46,23L43.2,23C43.2,11.8438 34.1562,2.8 23,2.8C16.1169,2.8 10.0379,6.2426 6.3909,11.5L3.077,11.5C7.0538,4.6253 14.4868,0 23,0C35.7025,0 46,10.2975 46,23Z"
         android:strokeColor="#00000000" android:strokeWidth="1"/>
