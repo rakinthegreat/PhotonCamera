@@ -155,7 +155,7 @@ public class CameraFragment extends Fragment
     public static CaptureResult mCaptureResult;
     public static final int rawFormat = ImageFormat.RAW_SENSOR;
     public static final int yuvFormat = ImageFormat.YUV_420_888;
-    public static final int prevFormat = ImageFormat.JPEG;
+    public static final int prevFormat = ImageFormat.YUV_420_888;
     public static int mTargetFormat = rawFormat;
     public static int mPreviewTargetFormat = prevFormat;
     public static CaptureResult mPreviewResult;
@@ -1033,13 +1033,10 @@ public class CameraFragment extends Fragment
             // Here, we create a CameraCaptureSession for camera preview.
             List surfaces = Arrays.asList(surface, mImageReaderPreview.getSurface());
             if(burst){
-                surfaces = Arrays.asList(surface, mImageReaderRaw.getSurface());
+                surfaces = Arrays.asList(mImageReaderPreview.getSurface(),mImageReaderRaw.getSurface());
             }
             if(mTargetFormat == mPreviewTargetFormat){
                 surfaces = Arrays.asList(surface, mImageReaderPreview.getSurface());
-                if(burst){
-                    surfaces = Arrays.asList(surface, mImageReaderPreview.getSurface());
-                }
             }
             mCameraDevice.createCaptureSession(surfaces,
                     new CameraCaptureSession.StateCallback() {
