@@ -7,7 +7,8 @@
         android:start="-1dp"
         android:top="-1dp">
         <shape>
-            <solid android:color="@color/colorAccent" />
+            <gradient android:startColor="@color/RedGrad"
+                android:endColor="@color/colorAccent"/>
             <corners android:radius="20dp" />
             <size android:height="20dp" />
 
