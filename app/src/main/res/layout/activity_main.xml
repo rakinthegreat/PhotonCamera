@@ -245,7 +245,7 @@
                         android:layout_gravity="end|center_vertical"
                         android:padding="9dp"
                         android:src="@drawable/round"
-                        app:civ_border_color="@color/Light"
+                        app:civ_border_color="@color/colorAccent"
                         app:civ_border_overlay="true"
                         app:civ_border_width="3dp"
                         app:layout_constraintBottom_toBottomOf="parent"
