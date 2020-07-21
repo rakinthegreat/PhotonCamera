@@ -5,7 +5,7 @@
         android:strokeColor="@color/colorAccent" android:strokeWidth="16.53"/>
     <path android:fillColor="#00000000"
         android:pathData="M157.34,5.9L157.34,311.9"
-        android:strokeColor="#FFA500" android:strokeWidth="16.53"/>
+        android:strokeColor="#00DBFF" android:strokeWidth="16.53"/>
     <path android:fillColor="#00000000"
         android:pathData="M7.33,158.9L307.35,158.9"
         android:strokeColor="@color/colorAccent" android:strokeWidth="16.53"/>
