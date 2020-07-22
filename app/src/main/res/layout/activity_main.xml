@@ -142,7 +142,7 @@
                 android:textOn=""
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/quadRes"
-                app:layout_constraintEnd_toStartOf="@id/settings"
+                app:layout_constraintEnd_toStartOf="@+id/settings"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
 
@@ -245,7 +245,7 @@
                         android:layout_gravity="end|center_vertical"
                         android:padding="9dp"
                         android:src="@drawable/round"
-                        app:civ_border_color="@color/colorAccent"
+                        app:civ_border_color="@color/Light"
                         app:civ_border_overlay="true"
                         app:civ_border_width="3dp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -307,7 +307,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:text="ISO"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/White"
                     android:textSize="25sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -322,15 +322,13 @@
                     android:max="64"
                     android:min="1"
                     android:progress="1"
-                    android:progressTint="@color/colorAccent"
+                    android:progressTint="@color/White"
                     android:theme="@android:style/Theme.Material"
                     android:thumb="@drawable/tickmark"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.3"
                     app:layout_constraintStart_toEndOf="@id/isoText"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.3" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/isoValue"
@@ -373,7 +371,7 @@
                     android:max="64"
                     android:min="1"
                     android:progress="1"
-                    android:progressTint="@color/colorAccent"
+                    android:progressTint="@color/White"
                     android:theme="@android:style/Theme.Material"
                     android:thumb="@drawable/tickmark"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -423,7 +421,7 @@
                     android:max="1000"
                     android:min="1"
                     android:progress="1"
-                    android:progressTint="@color/colorAccent"
+                    android:progressTint="@color/White"
                     android:theme="@android:style/Theme.Material"
                     android:thumb="@drawable/tickmark"
                     app:layout_constraintBottom_toBottomOf="parent"
