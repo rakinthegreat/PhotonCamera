@@ -401,7 +401,7 @@
                     <SeekBar
                         android:id="@+id/setting_gain"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="25dp"
                         android:layout_marginStart="30dp"
                         android:max="200"
                         android:min="50"
