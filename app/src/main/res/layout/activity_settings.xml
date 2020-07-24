@@ -133,7 +133,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/textjpgset"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="59dp"
@@ -252,7 +252,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/texthdrxset"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="59dp"
@@ -416,6 +416,31 @@
                         android:layout_height="@dimen/SettingSize1"
                         android:entries="@array/cfapat" />
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/reklama"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/card_layout"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:orientation="vertical"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="15dp"
+                    android:paddingBottom="10dp">
+
+                    <Button
+                        android:id="@+id/button"
+                        android:layout_width="375dp"
+                        android:layout_height="match_parent"
+                        android:background="#00FFFFFF"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:onClick="telega"
+                        android:text="@string/telegram" />
                 </LinearLayout>
 
             </LinearLayout>

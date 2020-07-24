@@ -3,12 +3,15 @@ package com.eszdman.photoncamera.ui;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -66,6 +69,25 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        if(Interface.i.settings.hdrx){
+            LinearLayout jpg = findViewById(R.id.settingsJPG);
+            TextView jpgt = findViewById(R.id.textjpgset);
+            jpgt.setVisibility(View.GONE);
+            jpg.setVisibility(View.GONE);
+            LinearLayout hdrx = findViewById(R.id.settingsHDRX);
+            TextView hdrxt = findViewById(R.id.texthdrxset);
+            hdrxt.setVisibility(View.VISIBLE);
+            hdrx.setVisibility(View.VISIBLE);
+        } else {
+            LinearLayout jpg = findViewById(R.id.settingsJPG);
+            jpg.setVisibility(View.VISIBLE);
+            TextView jpgt = findViewById(R.id.textjpgset);
+            jpgt.setVisibility(View.VISIBLE);
+            LinearLayout hdrx = findViewById(R.id.settingsHDRX);
+            TextView hdrxt = findViewById(R.id.texthdrxset);
+            hdrxt.setVisibility(View.GONE);
+            hdrx.setVisibility(View.GONE);
+        }
         Interface.i.settings.load();
         views();
         sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -370,5 +392,10 @@ public class SettingsActivity extends AppCompatActivity {
     void setv(SeekBar in, double val) {
         val *= 100;
         setv(in, (int) val);
+    }
+
+    public void telega(View view) {
+        Intent browserint = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/PhotonCamera"));
+        startActivity(browserint);
     }
 }

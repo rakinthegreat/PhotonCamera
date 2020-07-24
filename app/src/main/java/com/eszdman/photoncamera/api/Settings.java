@@ -73,7 +73,14 @@ public class Settings {
     private SharedPreferences.Editor sharedPreferencesEditor;
     private SharedPreferences sharedPreferences;
     Settings(){
-        load();
+        try {
+            load();
+        }catch (Exception e){
+            SharedPreferences.Editor ed = sharedPreferences.edit();
+            ed.clear();
+            ed.commit();
+            load();
+        }
     }
     public void load() {
         sharedPreferences = MainActivity.act.getPreferences(MODE_PRIVATE);
@@ -110,6 +117,7 @@ public class Settings {
         lastPicture = get(lastPicture);
         Log.d(TAG, "Loaded last picture:" + lastPicture);
         hdrx = get(hdrx);
+        Log.d(TAG, "Loaded hdrx:" + hdrx);
         cfaPattern = get(cfaPattern);
         Log.d(TAG, "Loaded CFA:" + cfaPattern);
         rawSaver = get(rawSaver);
@@ -164,6 +172,7 @@ public class Settings {
         put(lastPicture);
         Log.d(TAG, "Saved last picture:" + lastPicture);
         put(hdrx);
+        Log.d(TAG, "Saved hdrx:" + hdrx);
         Log.d(TAG, "Saved CFA:" + cfaPattern);
         put(cfaPattern);
         Log.d(TAG, "Saved RawSaver:" + rawSaver);

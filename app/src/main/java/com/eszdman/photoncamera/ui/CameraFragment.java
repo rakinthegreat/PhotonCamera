@@ -52,6 +52,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Range;
+import android.util.Rational;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -164,6 +165,7 @@ public class CameraFragment extends Fragment
     public static CaptureResult mPreviewResult;
     public long mPreviewExposuretime;
     public int mPreviewIso;
+    public Rational[] mPreviewTemp;
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
      * {@link TextureView}.
@@ -547,9 +549,11 @@ public class CameraFragment extends Fragment
                 if (sw.isChecked()) {
                     mTargetFormat = rawFormat;
                     Interface.i.settings.hdrx = true;
+                    Interface.i.settings.save();
                 } else {
                     mTargetFormat = yuvFormat;
                     Interface.i.settings.hdrx = false;
+                    Interface.i.settings.save();
                 }
                 restartCamera();
                 break;
@@ -608,6 +612,7 @@ public class CameraFragment extends Fragment
             public void onClick(View v) {
                     flip.animate().rotation(flip.getRotation() - 180).setDuration(450).start();
                     Interface.i.settings.mCameraID = cycler(Interface.i.settings.mCameraID, mCameraIds);
+                    Interface.i.settings.save();
                     restartCamera();
                 }
             });
