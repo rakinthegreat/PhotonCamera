@@ -12,7 +12,7 @@
             android:fillColor="#EEE"
             android:pathData="M203 223c0-110.46 89.54-200 200-200h274c110.46 0 200 89.54 200 200v455c0 110.46-89.54 200-200 200h-274c-110.46 0-200-89.54-200-200z"/>
         <path
-            android:fillColor="#673BB7"
+            android:fillColor="#0899C6"
             android:pathData="M540 251a200 200 0 1 0 0 400a200 200 0 1 0 0-400z"/>
         <path
             android:strokeWidth="21"
