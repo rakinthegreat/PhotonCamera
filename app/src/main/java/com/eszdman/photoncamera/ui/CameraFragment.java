@@ -64,6 +64,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
@@ -166,6 +167,8 @@ public class CameraFragment extends Fragment
     public long mPreviewExposuretime;
     public int mPreviewIso;
     public Rational[] mPreviewTemp;
+    Range FpsRangeDef;
+    Range FpsRangeHigh;
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
      * {@link TextureView}.
@@ -425,7 +428,7 @@ public class CameraFragment extends Fragment
                 if(ExposureIndex.index() > 8.0){
                     if(!is30Fps) {
                         Log.d(TAG,"Changed preview target 30fps");
-                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, new Range<>(3, 30));
+                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,FpsRangeDef);
                         mPreviewRequest = mPreviewRequestBuilder.build();
                         rebuildPreview();
                         is30Fps = true;
@@ -435,7 +438,7 @@ public class CameraFragment extends Fragment
                     if(is30Fps && Interface.i.settings.fpsPreview && mCameraDevice.getId() != "1")
                     {
                         Log.d(TAG,"Changed preview target 60fps");
-                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, new Range<>(3, 60));
+                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,FpsRangeHigh);
                         mPreviewRequest = mPreviewRequestBuilder.build();
                         rebuildPreview();
                         is30Fps = false;
@@ -623,6 +626,16 @@ public class CameraFragment extends Fragment
         img = view.findViewById(R.id.ImageOut);
         img.setOnClickListener(this);
         img.setClickable(true);
+        Switch night = view.findViewById(R.id.nightMode);
+        night.setChecked(Interface.i.settings.nightMode);
+        night.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Interface.i.settings.nightMode = !Interface.i.settings.nightMode;
+                Interface.i.settings.save();
+                restartCamera();
+            }
+        });
         mTextureView = view.findViewById(R.id.texture);
     }
 
@@ -647,6 +660,8 @@ public class CameraFragment extends Fragment
         if (Interface.i.settings.roundedge) edges.setVisibility(View.VISIBLE);
         else edges.setVisibility(View.GONE);
         hdrX.setChecked(Interface.i.settings.hdrx);
+        Switch night = Interface.i.mainActivity.findViewById(R.id.nightMode);
+        night.setChecked(Interface.i.settings.nightMode);
         startBackgroundThread();
         if (mTextureView == null) mTextureView = new AutoFitTextureView(MainActivity.act);
         if (mTextureView.isAvailable()) {
@@ -801,6 +816,29 @@ public class CameraFragment extends Fragment
         //int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         //noinspection ConstantConditions
         mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        Range[] ranges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+        int def = 30;
+        int min = 20;
+        for(int i =0; i<ranges.length;i++){
+            if((int)ranges[i].getUpper() >= def){
+                FpsRangeDef = ranges[i];
+                break;
+            }
+        }
+        if(FpsRangeDef == null)
+            for(int i =0; i<ranges.length;i++){
+                if((int)ranges[i].getUpper() >= min){
+                    FpsRangeDef = ranges[i];
+                    break;
+                }
+            }
+        for(int i =0; i<ranges.length;i++){
+            if((int)ranges[i].getUpper() > def){
+                FpsRangeDef = ranges[i];
+                break;
+            }
+        }
+        if(FpsRangeHigh == null) FpsRangeHigh = FpsRangeDef;
         boolean swappedDimensions = false;
         switch (displayRotation) {
             case 0:
@@ -1072,9 +1110,9 @@ public class CameraFragment extends Fragment
                                     //lightcycle.setVisibility(View.INVISIBLE);
                                     // Finally, we start displaying the camera preview.
                                     if (Interface.i.camera.is30Fps) {
-                                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, new Range<>(24, 30));
+                                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,FpsRangeDef);
                                     } else {
-                                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, new Range<>(24, 60));
+                                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,FpsRangeHigh);
                                     }
                                     mPreviewRequest = mPreviewRequestBuilder.build();
 
