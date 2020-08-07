@@ -5,16 +5,16 @@ import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.DngCreator;
+import android.hardware.camera2.params.BlackLevelPattern;
 import android.media.Image;
-import android.renderscript.RenderScript;
 import android.util.Log;
 import androidx.exifinterface.media.ExifInterface;
 
-import com.eszdman.photoncamera.OpenGL.GLCoreBlockProcessing;
-import com.eszdman.photoncamera.OpenGL.GLFormat;
-import com.eszdman.photoncamera.OpenGL.Nodes.PostPipeline;
-import com.eszdman.photoncamera.OpenGL.Nodes.RawPipeline;
-import com.eszdman.photoncamera.Render.Pipeline;
+import com.eszdman.photoncamera.OpenGL.Nodes.PostPipeline.PostPipeline;
+import com.eszdman.photoncamera.OpenGL.Nodes.RawPipeline.RawPipeline;
+import com.eszdman.photoncamera.OpenGL.Scripts.RawParams;
+import com.eszdman.photoncamera.OpenGL.Scripts.RawSensivity;
+import com.eszdman.photoncamera.Parameters.IsoExpoSelector;
 import com.eszdman.photoncamera.api.Camera2ApiAutoFix;
 import com.eszdman.photoncamera.api.CameraReflectionApi;
 import com.eszdman.photoncamera.api.ImageSaver;
@@ -42,9 +42,13 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Interceptor;
+
 import static androidx.exifinterface.media.ExifInterface.ORIENTATION_NORMAL;
 import static com.eszdman.photoncamera.Parameters.IsoExpoSelector.baseFrame;
 import static org.opencv.calib3d.Calib3d.RANSAC;
+import static org.opencv.calib3d.Calib3d.calibrateCameraExtended;
 import static org.opencv.calib3d.Calib3d.findHomography;
 
 public class ImageProcessing {
@@ -270,21 +274,52 @@ public class ImageProcessing {
         clearProcessingCycle();
     }
     void ApplyHdrX() {
+        boolean debugAlignment = false;
         CaptureResult res = CameraFragment.mCaptureResult;
         processingstep();
         long startTime = System.currentTimeMillis();
         int width = curimgs.get(0).getPlanes()[0].getRowStride() / curimgs.get(0).getPlanes()[0].getPixelStride(); //curimgs.get(0).getWidth()*curimgs.get(0).getHeight()/(curimgs.get(0).getPlanes()[0].getRowStride()/curimgs.get(0).getPlanes()[0].getPixelStride());
         int height = curimgs.get(0).getHeight();
         Log.d(TAG, "APPLYHDRX: buffer:" + curimgs.get(0).getPlanes()[0].getBuffer().asShortBuffer().remaining());
-        Wrapper.init(width, height, curimgs.size());
+        Log.d(TAG,"Api WhiteLevel:"+CameraFragment.mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL));
+        if(!debugAlignment) Wrapper.init(width, height, curimgs.size());
+        Object level = CameraFragment.mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL);
+        int levell = 1023;
+        if(level !=null) levell = (int)level;
+        float fakelevel = 1023;//(float)Math.pow(2,16)-1.f;//bits raw
+        float k = fakelevel/levell;
+        CameraReflectionApi.set(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL,(int)fakelevel);
+        BlackLevelPattern blevel = CameraFragment.mCameraCharacteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN);
+        int[] levelarr = new int[4];
+        blevel.copyTo(levelarr,0);
+        if(blevel !=null){
+            for(int i =0; i<4;i++){
+                levelarr[i]=(int)(levelarr[i]*k);
+            }
+            CameraReflectionApi.PatchBL(blevel,levelarr);
+            CameraReflectionApi.set(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN,blevel);
+        }
+        float[] dynBL = res.get(CaptureResult.SENSOR_DYNAMIC_BLACK_LEVEL);
+        if(dynBL != null){
+            for(int i =0; i<dynBL.length;i++){
+                dynBL[i]*=k;
+            }
+            CameraReflectionApi.set(CaptureResult.SENSOR_DYNAMIC_BLACK_LEVEL,dynBL,res);
+        }
+        Object wl = res.get(CaptureResult.SENSOR_DYNAMIC_WHITE_LEVEL);
+        if(wl !=null){
+            int wll = (int)wl;
+            wl=(int)(wll*k);
+            CameraReflectionApi.set(CaptureResult.SENSOR_DYNAMIC_WHITE_LEVEL,wll);
+        }
+        Log.d(TAG,"Api WhiteLevel:"+CameraFragment.mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL));
+        Log.d(TAG,"Api Blacklevel:"+CameraFragment.mCameraCharacteristics.get(CameraCharacteristics.SENSOR_BLACK_LEVEL_PATTERN));
         Interface.i.parameters.FillParameters(res,CameraFragment.mCameraCharacteristics, new android.graphics.Point(width,height));
+        if(Interface.i.parameters.realWL == -1) Interface.i.parameters.realWL = levell;
         Log.d(TAG, "Wrapper.init");
         RawPipeline rawPipeline = new RawPipeline();
-        GLCoreBlockProcessing glproc = new GLCoreBlockProcessing(new android.graphics.Point(width,height), new GLFormat(GLFormat.DataType.UNSIGNED_16));
-        rawPipeline.glproc = glproc;
-        float fakelevel = 1023.0f;
+        ArrayList<ByteBuffer> images = new ArrayList<>();
         for (int i = 0; i < curimgs.size(); i++) {
-            float k = fakelevel/Interface.i.parameters.whitelevel;
             ByteBuffer byteBuffer = null;
             if(i == 0){
                 byteBuffer = curimgs.get(baseFrame).getPlanes()[0].getBuffer();
@@ -294,38 +329,34 @@ public class ImageProcessing {
             } else {
                 byteBuffer = curimgs.get(i).getPlanes()[0].getBuffer();
             }
-            rawPipeline.sensivity = 1.0f;
-            if(i%2 == 3 && false){
-                rawPipeline.sensivity = k*0.5f;
+            if(i%4 == 3 && false){
+                //rawPipeline.sensivity = k*0.7f;
             }
             if(i%4 == 2 && false){
-                rawPipeline.sensivity = k*2.0f;
+                //rawPipeline.sensivity = k*6.0f;
             }
             byteBuffer.position(0);
-            /*rawPipeline.rawInput = byteBuffer;
-            ByteBuffer buff = rawPipeline.Run(Interface.i.parameters);
-            Log.d(TAG,"Buffer1 size:"+byteBuffer.remaining()+" Buffer2 size:"+buff.remaining());
-            byteBuffer.clear();
-            byteBuffer.put(buff);
-            byteBuffer.position(0);*/
-            Wrapper.loadFrame(byteBuffer);
+            images.add(byteBuffer);
+            if(!debugAlignment) Wrapper.loadFrame(byteBuffer);
         }
-
-
+        rawPipeline.imageobj = curimgs;
+        rawPipeline.images = images;
+        Log.d(TAG,"WhiteLevel:"+Interface.i.parameters.whitelevel);
         Log.d(TAG, "Wrapper.loadFrame");
-
-        ByteBuffer output = Wrapper.processFrame();
-        curimgs.get(0).getPlanes()[0].getBuffer().clear();
+        float deghostlevel = (float)Math.sqrt((CameraFragment.mCaptureResult.get(CaptureResult.SENSOR_SENSITIVITY))* IsoExpoSelector.getMPY() - 50.)/16.2f;
+        deghostlevel = Math.min(0.25f,deghostlevel);
+        Log.d(TAG,"Deghosting level:"+deghostlevel);
+        //ByteBuffer output = images.get(0);
+        ByteBuffer output = null;
+        if(!debugAlignment) output = Wrapper.processFrame(0.9f+deghostlevel);
+        else output = rawPipeline.Run();
+        //Black shot fix
+        curimgs.get(0).getPlanes()[0].getBuffer().position(0);
         curimgs.get(0).getPlanes()[0].getBuffer().put(output);
         curimgs.get(0).getPlanes()[0].getBuffer().position(0);
-        /*rawPipeline.rawInput = curimgs.get(0).getPlanes()[0].getBuffer();
-        ByteBuffer buff = rawPipeline.Run(Interface.i.parameters);
-        Log.d(TAG,"Buffer1 size:"+output.remaining()+" Buffer2 size:"+buff.remaining());
-        output.clear();
-        output.put(buff);
-        output.position(0);*/
+        for (int i = 1; i < curimgs.size(); i++) curimgs.get(i).close();
+        if(debugAlignment) rawPipeline.close();
         Log.d(TAG,"HDRX Alignment elapsed:"+(System.currentTimeMillis()-startTime) + " ms");
-
         if(Interface.i.settings.rawSaver) {
             DngCreator dngCreator = new DngCreator(CameraFragment.mCameraCharacteristics, CameraFragment.mCaptureResult);
             try {
@@ -357,9 +388,6 @@ public class ImageProcessing {
         }
         Log.d(TAG, "Wrapper.processFrame()");
         Interface.i.parameters.path = path;
-        for (int i = 1; i < curimgs.size(); i++) curimgs.get(i).close();
-        curimgs.get(0).getPlanes()[0].getBuffer().position(0);
-        //Pipeline.RunPipeline(curimgs.get(0).getPlanes()[0].getBuffer());
         PostPipeline pipeline = new PostPipeline();
         pipeline.Run(curimgs.get(0).getPlanes()[0].getBuffer(),Interface.i.parameters);
         pipeline.close();

@@ -41,6 +41,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -169,6 +170,7 @@ public class CameraFragment extends Fragment
     public Rational[] mPreviewTemp;
     Range FpsRangeDef;
     Range FpsRangeHigh;
+    private float mFocus;
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
      * {@link TextureView}.
@@ -416,8 +418,12 @@ public class CameraFragment extends Fragment
                                        @NonNull TotalCaptureResult result) {
             Object exposure = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
             Object iso = result.get(CaptureResult.SENSOR_SENSITIVITY);
+            Object focus = result.get(CaptureResult.LENS_FOCUS_DISTANCE);
+            Rational[] mtemp = result.get(CaptureResult.SENSOR_NEUTRAL_COLOR_POINT);
             if(exposure != null) mPreviewExposuretime = (long)exposure;
             if(iso != null) mPreviewIso = (int)iso;
+            if(focus != null) mFocus = (float)focus; else focus = 0.f;
+            mPreviewTemp = mtemp;
             process(result);
         }
         //Automatic 60fps preview
@@ -570,6 +576,7 @@ public class CameraFragment extends Fragment
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         onCameraViewCreated();
+        Interface.i.touchFocus.ReInit();
         lightcycle = view.findViewById(R.id.lightCycle);
         lightcycle.setAlpha(0);
         lightcycle.setMax(Interface.i.settings.frameCount);
@@ -649,8 +656,10 @@ public class CameraFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+
         Log.d(TAG,"CameraResume");
         MainActivity.act.onCameraResume();
+        Interface.i.touchFocus.ReInit();
         ImageView grid_icon = MainActivity.act.findViewById(R.id.grid);
         ImageView edges = MainActivity.act.findViewById(R.id.edges);
         ToggleButton hdrX = MainActivity.act.findViewById(R.id.stacking);
@@ -752,7 +761,6 @@ public class CameraFragment extends Fragment
     int mPreviewheight;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressWarnings("SuspiciousNameCombination")
     private void setUpCameraOutputs(int width, int height) {
         Activity activity = getActivity();
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
@@ -769,7 +777,6 @@ public class CameraFragment extends Fragment
                 //Thread thr = new Thread(imageSaver);
                 //thr.start();
                 mBackgroundHandler.post(imageSaver);
-                return;
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
@@ -1118,10 +1125,9 @@ public class CameraFragment extends Fragment
 
                                     //CameraReflectionApi.set(mPreviewRequest,CaptureRequest.CONTROL_AE_MODE,CaptureRequest.CONTROL_AE_MODE_OFF);
                                     if (!burst) {
-                                        unlockFocus();
                                         mCaptureSession.setRepeatingRequest(mPreviewRequest,
                                                 mCaptureCallback, mBackgroundHandler);
-
+                                        unlockFocus();
                                     } else {
                                         mCaptureSession.captureBurst(captures, CaptureCallback, null);
                                         burst = false;
@@ -1146,6 +1152,15 @@ public class CameraFragment extends Fragment
         try {
             mCaptureSession.stopRepeating();
             mCaptureSession.setRepeatingRequest(mPreviewRequest,
+                    mCaptureCallback, mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+    public void rebuildPreviewBuilder(){
+        try {
+            mCaptureSession.stopRepeating();
+            mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
                     mCaptureCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -1252,14 +1267,19 @@ public class CameraFragment extends Fragment
             // This is the CaptureRequest.Builder that we use to take a picture.
             final CaptureRequest.Builder captureBuilder =
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            // Use the same AE and AF modes as the preview.
-            //mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
-            //mImageReaderRes.setOnImageAvailableListener(mOnRawImageAvailableListener, mBackgroundHandler);
             mCaptureSession.stopRepeating();
             FixPreview = true;
             if(mTargetFormat != mPreviewTargetFormat) captureBuilder.addTarget(mImageReaderRaw.getSurface());
             else captureBuilder.addTarget(mImageReaderPreview.getSurface());
             Interface.i.settings.applyRes(captureBuilder);
+            //captureBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+            //captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,CaptureRequest.CONTROL_AF_MODE_OFF);
+            Log.d(TAG,"Focus:"+mFocus);
+            //captureBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE,mFocus);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_CANCEL);
+            for(int i =0; i<3;i++){
+                Log.d(TAG,"Temperature:"+mPreviewTemp[i]);
+            }
             Log.d(TAG,"CaptureBuilderStarted!");
             //setAutoFlash(captureBuilder);
             //int rotation = Interface.i.gravity.getCameraRotation();//activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -1269,6 +1289,9 @@ public class CameraFragment extends Fragment
             lightcycle.setMax(FrameNumberSelector.frameCount);
             for (int i = 0; i < FrameNumberSelector.frameCount; i++) {
                 IsoExpoSelector.setExpo(captureBuilder, i);
+                CaptureRequest request = captureBuilder.build();
+                CameraReflectionApi.set(request,CaptureRequest.CONTROL_AF_MODE,CaptureRequest.CONTROL_AF_MODE_OFF);
+                CameraReflectionApi.set(request,CaptureRequest.LENS_FOCUS_DISTANCE,mFocus);
                 captures.add(captureBuilder.build());
             }
             //img
@@ -1326,7 +1349,7 @@ public class CameraFragment extends Fragment
                 @Override
                 public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
                     burstcount[1]++;
-                    if (burstcount[1] == burstcount[2] + 1 || ImageSaver.imageBuffer.size() == burstcount[2]) {
+                    if (burstcount[1] >= burstcount[2] + 1 || ImageSaver.imageBuffer.size() >= burstcount[2]) {
                         try {
                             mCaptureSession.abortCaptures();
                             lightcycle.setAlpha(0f);

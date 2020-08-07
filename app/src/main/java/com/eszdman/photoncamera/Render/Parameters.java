@@ -14,12 +14,12 @@ import com.eszdman.photoncamera.Parameters.FrameNumberSelector;
 import com.eszdman.photoncamera.api.Interface;
 
 public class Parameters {
-    private String TAG = "Parameters";
     public byte cfaPattern;
     public Point rawSize;
     public float[] blacklevel = new float[4];
     public float[] whitepoint = new float[3];
     public int whitelevel = 1023;
+    public int realWL = -1;
     public boolean hasGainMap;
     public Point mapsize;
     public float[] gainmap;
@@ -45,7 +45,7 @@ public class Parameters {
             cfaPattern = (byte)Interface.i.settings.cfaPattern;
         }
         Object wlevel = characteristics.get(CameraCharacteristics.SENSOR_INFO_WHITE_LEVEL);
-        if (wlevel != null) whitelevel = (short) ((int) wlevel);
+        if (wlevel != null) whitelevel = ((int)wlevel);
         hasGainMap = false;
         mapsize = new Point(1, 1);
         gainmap = new float[1];
@@ -59,6 +59,7 @@ public class Parameters {
             if ((gainmap[(gainmap.length / 8) - (gainmap.length / 8) % 4]) == 1.0 &&
                     (gainmap[(gainmap.length / 2) - (gainmap.length / 2) % 4]) == 1.0 &&
                     (gainmap[(gainmap.length / 2 + gainmap.length / 8) - (gainmap.length / 2 + gainmap.length / 8) % 4]) == 1.0) {
+                String TAG = "Parameters";
                 Log.d(TAG, "DETECTED FAKE GAINMAP, REPLACING WITH STATIC GAINMAP");
                 gainmap = new float[Const.gainmap.length];
                 for (int i = 0; i < Const.gainmap.length; i += 4) {
@@ -129,20 +130,13 @@ public class Parameters {
 
     @Override
     public String toString() {
-        String gainmapstr = ", GainMapSamples=NoGainMap";
-        if (hasGainMap)
-            gainmapstr = ", GainMapSamples=(" + FltFormat(gainmap[(gainmap.length / 8) - (gainmap.length / 8) % 4]) + " "
-                    + FltFormat(gainmap[(gainmap.length / 2) - (gainmap.length / 2) % 4]) + " " + FltFormat(gainmap[(gainmap.length / 2 + gainmap.length / 8) - (gainmap.length / 2 + gainmap.length / 8) % 4]) + ")";
         return "Parameters:" +
-                " rawSize=" + rawSize +
                 ", hasGainMap=" + hasGainMap +
-                ", tonemapStrength=" + FltFormat(tonemapStrength) +
                 ", framecount=" + FrameNumberSelector.frameCount +
                 ", CameraID=" + Interface.i.settings.mCameraID +
                 ", Satur=" + FltFormat(Interface.i.settings.saturation) +
                 ", Gain=" + FltFormat(Interface.i.settings.gain) +
-                ", Sharpness=" + FltFormat(Interface.i.settings.sharpness) +
-                gainmapstr;
+                ", Sharpness=" + FltFormat(Interface.i.settings.sharpness);
     }
 
     @SuppressLint("DefaultLocale")

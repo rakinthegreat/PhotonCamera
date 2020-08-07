@@ -28,7 +28,7 @@ public class ParseExif {
         if(out !=null) return out.toString();
         else return "";
     }
-    private static String TAG = "ParseExif";
+
     public static ExifInterface Parse(CaptureResult result, String path){
         ExifInterface inter = null;
         try {
@@ -37,6 +37,7 @@ public class ParseExif {
             e.printStackTrace();
         }
         int rotation = Interface.i.gravity.getCameraRotation();
+        String TAG = "ParseExif";
         Log.d(TAG,"Gravity rotation:"+Interface.i.gravity.getRotation());
         Log.d(TAG,"Sensor rotation:"+Interface.i.camera.mSensorOrientation);
         int orientation = ORIENTATION_NORMAL;
@@ -54,7 +55,7 @@ public class ParseExif {
         Log.d(TAG,"rotation:"+rotation);
         Log.d(TAG,"orientation:"+orientation);
         assert inter != null;
-        inter.setAttribute(TAG_ORIENTATION,Integer.toString(orientation));
+        //inter.setAttribute(TAG_ORIENTATION,Integer.toString(orientation));
         inter.setAttribute(TAG_SENSITIVITY_TYPE, String.valueOf(SENSITIVITY_TYPE_ISO_SPEED));
         Object iso = result.get(SENSOR_SENSITIVITY);
         int isonum = 100;
@@ -70,7 +71,8 @@ public class ParseExif {
         inter.setAttribute(TAG_MODEL, Build.MODEL);
         inter.setAttribute(TAG_MAKE, Build.BRAND);
         inter.setAttribute(TAG_EXIF_VERSION,"0231");
-        inter.setAttribute(TAG_IMAGE_DESCRIPTION,Interface.i.parameters.toString());
+        inter.setAttribute(TAG_IMAGE_DESCRIPTION,Interface.i.parameters.toString()+
+                "\n"+"Version:"+"0.55");
         return inter;
     }
 }

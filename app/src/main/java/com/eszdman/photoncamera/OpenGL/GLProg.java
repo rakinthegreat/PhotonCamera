@@ -1,9 +1,9 @@
 package com.eszdman.photoncamera.OpenGL;
 
+import android.opengl.GLES30;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,8 @@ public class GLProg implements AutoCloseable  {
         //this.vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
         int program = createProgram(vertexShader,nShader);
         glLinkProgram(program);
-        checkEglError("glLinkProgram");
+        GLES30.glGetError();
+        //checkEglError("glLinkProgram");
         glUseProgram(program);
         checkEglError("glUseProgram");
         mCurrentProgramActive = program;
@@ -149,7 +150,8 @@ public class GLProg implements AutoCloseable  {
         glTexture.BufferLoad();
         drawBlocks(glTexture.mSize.x, glTexture.mSize.y);
     }
-    private void drawBlocks(int w, int h) {
+
+    public void drawBlocks(int w, int h) {
         GLBlockDivider divider = new GLBlockDivider(h, GLConst.TileSize);
         int[] row = new int[2];
         while (divider.nextBlock(row)) {
@@ -157,6 +159,7 @@ public class GLProg implements AutoCloseable  {
             draw();
         }
     }
+
     @SuppressWarnings("ConstantConditions")
     public void setTexture(String var, GLTexture tex) {
         int textureId;
@@ -167,10 +170,10 @@ public class GLProg implements AutoCloseable  {
             mTextureBinds.put(var, textureId);
             mNewTextureId += 2;
         }
-        servar(var, textureId);
+        setvar(var, textureId);
         tex.bind(GL_TEXTURE0 + textureId);
     }
-    public void servar(String name, int ...vars){
+    public void setvar(String name, int ...vars){
         int addr = glGetUniformLocation(mCurrentProgramActive,name);
         switch (vars.length) {
             case 1: glUniform1i(addr, vars[0]); break;
@@ -180,7 +183,7 @@ public class GLProg implements AutoCloseable  {
             default: throw new RuntimeException("Wrong var size " + name);
         }
     }
-    public void servar(String name, float ...vars){
+    public void setvar(String name, float ...vars){
         int addr = glGetUniformLocation(mCurrentProgramActive,name);
         switch (vars.length) {
             case 1: glUniform1f(addr, vars[0]); break;

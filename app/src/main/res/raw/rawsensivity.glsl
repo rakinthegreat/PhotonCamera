@@ -2,18 +2,19 @@
 precision mediump float;
 precision mediump usampler2D;
 uniform usampler2D RawBuffer;
+uniform float whitelevel;
 uniform usampler2D HotPixelMap;
-ivec2 HotPixelMapSize;
+uniform ivec2 HotPixelMapSize;
 uniform int yOffset;
 uniform float PostRawSensivity;
 
-out vec4 Output;
-
+out uint Output;
 void main() {
     ivec2 xy = ivec2(gl_FragCoord.xy);
+    //xy.x*=2;
     xy+=ivec2(0,yOffset);
-    float rawIn = float(texelFetch(RawBuffer, (xy), 0).x)/1023.0;
-    rawIn*=1.0;
-    rawIn =clamp(rawIn,0.0,1.0);
-    Output = vec4(rawIn);
+    uint rawpart = uint(texelFetch(RawBuffer, (xy), 0).x);
+    float flpart = float(rawpart)/whitelevel;
+    flpart =clamp(flpart*PostRawSensivity*whitelevel,0.0,65535.0);
+    Output = int(flpart);
 }
