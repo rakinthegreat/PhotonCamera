@@ -45,6 +45,7 @@ import android.hardware.camera2.params.RggbChannelVector;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -1289,6 +1290,7 @@ public class CameraFragment extends Fragment
             Log.d(TAG,"Focus:"+mFocus);
             //captureBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE,mFocus);
             captureBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_CANCEL);
+            captureBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE,CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);
             for(int i =0; i<3;i++){
                 Log.d(TAG,"Temperature:"+mPreviewTemp[i]);
             }
@@ -1299,11 +1301,11 @@ public class CameraFragment extends Fragment
             captures = new ArrayList<>();
             FrameNumberSelector.getFrames();
             lightcycle.setMax(FrameNumberSelector.frameCount);
+            IsoExpoSelector.HDR = false;//Force HDR for tests
+            captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,CaptureRequest.CONTROL_AF_MODE_OFF);
+            captureBuilder.set(CaptureRequest.LENS_FOCUS_DISTANCE,mFocus);
             for (int i = 0; i < FrameNumberSelector.frameCount; i++) {
                 IsoExpoSelector.setExpo(captureBuilder, i);
-                CaptureRequest request = captureBuilder.build();
-                CameraReflectionApi.set(request,CaptureRequest.CONTROL_AF_MODE,CaptureRequest.CONTROL_AF_MODE_OFF);
-                CameraReflectionApi.set(request,CaptureRequest.LENS_FOCUS_DISTANCE,mFocus);
                 captures.add(captureBuilder.build());
             }
             //img
