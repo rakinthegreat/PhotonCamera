@@ -1,45 +1,33 @@
 package com.eszdman.photoncamera.api;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.util.Size;
-import androidx.annotation.RequiresApi;
+
+import com.eszdman.photoncamera.app.PhotonCamera;
 import com.eszdman.photoncamera.ui.MainActivity;
 
 import java.io.File;
 import java.util.Comparator;
 
+import rapid.decoder.BitmapDecoder;
+
+@SuppressWarnings("ALL")
 public class Photo {
     public static Photo instance;
     private static Handler galleryHandler;
     static class GalleryHandler extends Handler {
-        GalleryHandler() {
-        }
         @Override
         public void handleMessage(Message msg)
         {
-            Uri uri = null;
-            Bitmap bmp = null;
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                bmp = (Bitmap) msg.obj;
-            } else{
-                uri = (Uri)msg.obj;
-            }
+            Bitmap bmp = (Bitmap) msg.obj;
             try {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    Interface.i.camera.img.setImageBitmap(bmp);
-                } else {
-                    Interface.i.camera.img.setImageURI(uri);
-                }
+              PhotonCamera.getCameraUI().galleryImageButton.setImageBitmap(bmp);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -80,8 +68,8 @@ public class Photo {
     }
 
     public void ShowPhoto() {
-        if (Interface.i.settings.lastPicture != null) {
-            ShowPhoto(new File(Interface.i.settings.lastPicture));
+        if (PhotonCamera.getSettings().lastPicture != null) {
+            ShowPhoto(new File(PhotonCamera.getSettings().lastPicture));
         }
     }
 
@@ -93,19 +81,15 @@ public class Photo {
     }
     public void SaveImg(File in) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        boolean wasNull = Interface.i.settings.lastPicture == null;
-        Interface.i.settings.lastPicture = in.getAbsolutePath();
-        if (wasNull) Interface.i.settings.save();
+        boolean wasNull = PhotonCamera.getSettings().lastPicture == null;
+        PhotonCamera.getSettings().setLastPicture(in.getAbsolutePath());
+//        if (wasNull) Interface.getSettings().save();
         Uri contentUri = Uri.fromFile(in);
         try {
             Bitmap thumb = null;
             Message uriMessage = new Message();
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                thumb = ThumbnailUtils.createImageThumbnail(in, new Size(120, 120), null);
-                uriMessage.obj = thumb;
-            } else {
-                uriMessage.obj = contentUri;
-            }
+            thumb = BitmapDecoder.from(Uri.fromFile(in)).scaleBy(0.1f).decode();
+            uriMessage.obj = thumb;
             galleryHandler.sendMessage(uriMessage);
         } catch (Exception e) {
             e.printStackTrace();

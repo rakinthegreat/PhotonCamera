@@ -1,15 +1,12 @@
 package com.eszdman.photoncamera.OpenGL;
 
-import android.annotation.SuppressLint;
-
 import com.eszdman.photoncamera.Render.Parameters;
-import com.eszdman.photoncamera.api.Interface;
+import com.eszdman.photoncamera.app.PhotonCamera;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 
 public class GLInterface {
-    public GLProg glprogram;
+    public final GLProg glprogram;
     public Parameters parameters;
     public GLCoreBlockProcessing glProc;
     public GLContext glContext;
@@ -17,17 +14,17 @@ public class GLInterface {
         glProc = processing;
         glprogram = glProc.mProgram;
     }
+
     public GLInterface(GLContext context){
         glContext = context;
         glprogram = glContext.mProgram;
     }
-    @SuppressLint("NewApi")
+
     static public String loadShader(int fragment) {
         StringBuilder source = new StringBuilder();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(Interface.i.mainActivity.getResources().openRawResource(fragment)));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(PhotonCamera.getMainActivity().getResources().openRawResource(fragment)));
         for (Object line : reader.lines().toArray()) {
-            source.append(line +"\n");
+            source.append(line).append("\n");
         }
         return source.toString();
     }

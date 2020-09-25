@@ -4,6 +4,7 @@ precision mediump usampler2D;
 precision mediump sampler2D;
 uniform sampler2D Fullbuffer;
 uniform sampler2D GainMap;
+uniform sampler2D TonemapTex;
 uniform int RawSizeX;
 uniform int RawSizeY;
 uniform vec4 blackLevel;
@@ -88,6 +89,9 @@ vec3 tonemap(vec3 rgb) {
     pow(minmax, vec2(2.f)) * toneMapCoeffs.y +
     minmax * toneMapCoeffs.z +
     toneMapCoeffs.w;
+
+    //minmax.x*=texelFetch(TonemapTex,ivec2(int(minmax.x*255.0),0),0).x;
+    //minmax.y*=texelFetch(TonemapTex,ivec2(int(minmax.y*255.0),0),0).x;
     minmax = mix(minmax, minmaxsin, 0.4f);
 
     // Rescale middle value
@@ -169,8 +173,8 @@ vec3 linearizeAndGainMap(ivec2 coords){
     //pRGB = clamp(pRGB,0.0,1.0);
     return pRGB;
 }
-const float redcorr = 0.2;
-const float bluecorr = 0.4;
+const float redcorr = 0.0;
+const float bluecorr = 0.0;
 vec3 saturate(vec3 rgb) {
     float r = rgb.r;
     float g = rgb.g;
@@ -179,9 +183,12 @@ vec3 saturate(vec3 rgb) {
     //color wide filter
     hsv.g = clamp(hsv.g*(saturation),0.,1.0);
     rgb = hsv2rgb(hsv);
-    rgb.r+=r*redcorr*saturation;
-    rgb.b-=b*bluecorr*saturation;
-    rgb*=(r+g+b)/(rgb.r+rgb.g+rgb.b);
+    //rgb.r+=r*redcorr*saturation;
+    //rgb.g=clamp(rgb.g,0.0,1.0);
+    //rgb.b-=b*bluecorr*saturation;
+    //rgb = clamp(rgb, 0.0,1.0);
+    //rgb*=(r+g+b)/(rgb.r+rgb.g+rgb.b);
+
     return rgb;
 }
 void main() {
@@ -190,5 +197,6 @@ void main() {
     vec3 pRGB = linearizeAndGainMap(xy);
     vec3 sRGB = applyColorSpace(pRGB);
     sRGB = saturate(sRGB);
+    sRGB = clamp(sRGB,0.0,1.0);
     Output = vec4(sRGB.r,sRGB.g,sRGB.b,1.0);
 }

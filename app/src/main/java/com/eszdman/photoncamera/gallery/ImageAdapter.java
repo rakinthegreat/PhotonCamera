@@ -3,8 +3,6 @@ package com.eszdman.photoncamera.gallery;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import java.io.File;
@@ -15,8 +13,8 @@ import com.bumptech.glide.Glide;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 
 public class ImageAdapter extends PagerAdapter {
-    private Context context;
-    private File[] file;
+    private final Context context;
+    private final File[] file;
 
     ImageAdapter(Context context, File[] file) {
         this.context = context;
@@ -34,7 +32,7 @@ public class ImageAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Arrays.sort(file, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
-        ImageView imageView = new ImageView(context);
+        TouchImageView imageView = new TouchImageView(context);
         Glide
                 .with(context)
                 .load(file[position])

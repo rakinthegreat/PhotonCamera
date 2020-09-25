@@ -46,14 +46,14 @@ import static android.opengl.GLES30.glViewport;
 import static com.eszdman.photoncamera.OpenGL.GLCoreBlockProcessing.checkEglError;
 
 public class GLProg implements AutoCloseable  {
-    private static String TAG = "GLProgram";
+    private static final String TAG = "GLProgram";
     private final List<Integer> mPrograms = new ArrayList<>();
-    private int vertexShader;
+    private final int vertexShader;
     private final GLSquareModel mSquare = new GLSquareModel();
     private int mCurrentProgramActive;
     private final Map<String, Integer> mTextureBinds = new HashMap<>();
     private int mNewTextureId;
-    String vertexShaderSource = "#version 300 es\n" +
+    final String vertexShaderSource = "#version 300 es\n" +
             "precision mediump float;\n" +
             "in vec4 vPosition;\n" +
             "void main() {\n" +
@@ -194,7 +194,7 @@ public class GLProg implements AutoCloseable  {
             default: throw new RuntimeException("Wrong var size " + name);
         }
     }
-    public void servaru(String name, int ...vars){
+    public void setvaru(String name, int ...vars){
         int addr = glGetUniformLocation(mCurrentProgramActive,name);
         switch (vars.length) {
             case 1: glUniform1ui(addr, vars[0]); break;

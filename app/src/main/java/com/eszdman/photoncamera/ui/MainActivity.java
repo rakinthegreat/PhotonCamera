@@ -1,28 +1,25 @@
 package com.eszdman.photoncamera.ui;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.ToggleButton;
-
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.preference.PreferenceManager;
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
-import com.eszdman.photoncamera.Control.Manual;
 import com.eszdman.photoncamera.R;
-import com.eszdman.photoncamera.api.Camera2ApiAutoFix;
-import com.eszdman.photoncamera.api.Interface;
+import com.eszdman.photoncamera.api.CameraFragment;
+import com.eszdman.photoncamera.log.FragmentLifeCycleMonitor;
 import com.eszdman.photoncamera.api.Permissions;
-
-import org.opencv.android.OpenCVLoader;
-
+import com.eszdman.photoncamera.app.PhotonCamera;
+import com.eszdman.photoncamera.settings.PreferenceKeys;
+import com.eszdman.photoncamera.util.FileManager;
+import com.manual.ManualMode;
 import de.hdodenhof.circleimageview.CircleImageView;
+import org.opencv.android.OpenCVLoader;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     final int Rotation90  = 2;
     final int Rotation180 = 3;
     final int Rotation270 = 4;
-    final int RotationDur = 350;
+    public final int RotationDur = 350;
     public static MainActivity act;
     static {
         if (!OpenCVLoader.initDebug()) {
@@ -40,49 +37,30 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        /*if (CameraFragment.context.mState != 5) {
-            super.onBackPressed();
-            return;
-        }
-        Intent intent = this.getIntent();
-        this.finish();
-        this.startActivity(intent);
-        */
         super.onBackPressed();
         Animatoo.animateShrink(this);
-    }
-
-    ImageView grid;
-    public void onCameraResume(){
-        Interface.i.swipedetection.RunDetection();
-    }
-    public static void onCameraViewCreated(){
-        Interface.i.manual = new Manual();
-
-        //Interface.i.swipedetection.RunDetection();
-    }
-    public static void onCameraInitialization(){
-        Camera2ApiAutoFix.Init();
-        Interface.i.manual.Init();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         act = this;
-        Interface inter = new Interface(this);
-//        Wrapper.Test();
+        PhotonCamera.setMainActivity(this);
+        PhotonCamera.setManualMode(ManualMode.getInstance(this));
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceKeys.setDefaults();
+        PhotonCamera.getSettings().loadCache();
+        //Wrapper.Test();
         Permissions.RequestPermissions(this, 2, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA});
-
+        FileManager.CreateFolders();
         CameraFragment.context = CameraFragment.newInstance();
-        inter.camera = CameraFragment.context;
+        PhotonCamera.setCameraFragment(CameraFragment.context);
         setContentView(R.layout.activity_camera);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (null == savedInstanceState) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, CameraFragment.context)
-                    .commit();
-        }
+        //   if (null == savedInstanceState)
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, CameraFragment.context)
+                .commit();
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifeCycleMonitor(),true);
 
         customOrientationEventListener = new
                 CustomOrientationEventListener(getBaseContext()) {
@@ -91,14 +69,14 @@ public class MainActivity extends AppCompatActivity {
                         ToggleButton stacking = findViewById(R.id.stacking);
                         Button settings = findViewById(R.id.settings);
                         CircleImageView gallery = findViewById(R.id.ImageOut);
-                        ImageView expText = findViewById(R.id.expText);
-                        ImageView isoText = findViewById(R.id.isoText);
-                        ImageView focusText = findViewById(R.id.focusText);
+//                        ImageView expText = findViewById(R.id.expText);
+//                        ImageView isoText = findViewById(R.id.isoText);
+//                        ImageView focusText = findViewById(R.id.focusText);
                         ToggleButton eis = findViewById(R.id.eisPhoto);
                         ToggleButton fpsPreview = findViewById(R.id.fpsPreview);
                         ToggleButton quadres = findViewById(R.id.quadRes);
                         int rot = 0;
-                        switch(orientation){
+                        switch (orientation) {
                             case Rotation90:
                                 rot = -90;
                                 //rotate as left on top
@@ -115,12 +93,14 @@ public class MainActivity extends AppCompatActivity {
                         stacking.animate().rotation(rot).setDuration(RotationDur).start();
                         settings.animate().rotation(rot).setDuration(RotationDur).start();
                         gallery.animate().rotation(rot).setDuration(RotationDur).start();
-                        expText.animate().rotation(rot).setDuration(RotationDur).start();
-                        isoText.animate().rotation(rot).setDuration(RotationDur).start();
-                        focusText.animate().rotation(rot).setDuration(RotationDur).start();
+//                        expText.animate().rotation(rot).setDuration(RotationDur).start();
+//                        isoText.animate().rotation(rot).setDuration(RotationDur).start();
+//                        focusText.animate().rotation(rot).setDuration(RotationDur).start();
                         eis.animate().rotation(rot).setDuration(RotationDur).start();
                         fpsPreview.animate().rotation(rot).setDuration(RotationDur).start();
                         quadres.animate().rotation(rot).setDuration(RotationDur).start();
+                        if (findViewById(R.id.manual_mode).getVisibility() == View.VISIBLE)
+                            PhotonCamera.getManualMode().rotate(rot);
                     }
                 };
     }
@@ -143,3 +123,4 @@ public class MainActivity extends AppCompatActivity {
         customOrientationEventListener.disable();
     }
 }
+
