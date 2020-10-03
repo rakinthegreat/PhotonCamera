@@ -5,9 +5,12 @@ android {
     def versionBuild
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
-    ndkVersion '21.3.6528147'
     lintOptions {
         abortOnError false
+    }
+
+    buildFeatures {
+        dataBinding true
     }
 
     if (versionPropsFile.canRead()) {
@@ -37,7 +40,7 @@ android {
         renderscriptTargetApi 24
         renderscriptSupportModeEnabled false
         versionCode versionCode
-        versionName '0.65'
+        versionName '0.66'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters "arm64-v8a"
@@ -91,8 +94,7 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.mytechia:opencv:4.1.0-my'
-    implementation 'androidx.exifinterface:exifinterface:1.3.0-rc01'
+    implementation 'androidx.exifinterface:exifinterface:1.3.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.github.mohammadatif:Animatoo:master'
     implementation 'org.jocl:jocl:2.0.2'
@@ -103,4 +105,5 @@ dependencies {
     implementation 'rapid.decoder:library:0.3.0'
     implementation 'rapid.decoder:jpeg-decoder:0.3.0'
     implementation 'rapid.decoder:png-decoder:0.3.0'
+    implementation 'com.quickbirdstudios:opencv:4.3.0'
 }

@@ -82,7 +82,6 @@ public class GLBasePipeline implements AutoCloseable {
         Nodes.clear();
         return glint.glProc.mOutBuffer;
     }
-
     @Override
     public void close() {
         if(glint.glProc != null) glint.glProc.close();

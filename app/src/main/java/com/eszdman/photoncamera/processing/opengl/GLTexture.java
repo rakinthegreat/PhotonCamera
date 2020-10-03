@@ -3,6 +3,7 @@ package com.eszdman.photoncamera.processing.opengl;
 import android.graphics.Point;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
 import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
 import static android.opengl.GLES20.GL_COLOR_ATTACHMENT0;
@@ -18,6 +19,7 @@ import static android.opengl.GLES20.glDeleteTextures;
 import static android.opengl.GLES20.glFramebufferTexture2D;
 import static android.opengl.GLES20.glGenFramebuffers;
 import static android.opengl.GLES20.glGenTextures;
+import static android.opengl.GLES20.glReadPixels;
 import static android.opengl.GLES20.glTexImage2D;
 import static android.opengl.GLES20.glTexParameteri;
 import static android.opengl.GLES20.glViewport;
@@ -31,9 +33,16 @@ public class GLTexture implements AutoCloseable {
     public final int mGLFormat;
     public final int mTextureID;
     public final GLFormat mFormat;
+    public GLTexture(GLTexture in){
+        this(in.mSize,in.mFormat,null);
+    }
+    public GLTexture(int sizex,int sizey,GLFormat glFormat, Buffer pixels){
+        this(new Point(sizex,sizey),glFormat,pixels,GL_NEAREST,GL_CLAMP_TO_EDGE);
+    }
     public GLTexture(Point size,GLFormat glFormat, Buffer pixels){
         this(size,glFormat,pixels,GL_NEAREST,GL_CLAMP_TO_EDGE);
     }
+
     public GLTexture(Point size, GLFormat glFormat, Buffer pixels, int textureFilter, int textureWrapper) {
         mFormat = glFormat;
         this.mSize = size;
@@ -51,7 +60,7 @@ public class GLTexture implements AutoCloseable {
         checkEglError("Tex glTexParameteri");
     }
 
-    void BufferLoad(){
+    public void BufferLoad(){
         int[] frameBuffer = new int[1];
         glGenFramebuffers(1, frameBuffer, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
@@ -59,12 +68,16 @@ public class GLTexture implements AutoCloseable {
         glViewport(0, 0, mSize.x,mSize.y);
         checkEglError("Tex BufferLoad");
     }
-    void bind(int slot) {
+    public void bind(int slot) {
         glActiveTexture(slot);
         glBindTexture(GL_TEXTURE_2D, mTextureID);
         checkEglError("Tex bind");
     }
-
+    public ByteBuffer textureBuffer(GLFormat outputFormat){
+        ByteBuffer buffer = ByteBuffer.allocate(mSize.x*mSize.y*outputFormat.mFormat.mSize*outputFormat.mChannels);
+        glReadPixels(0, 0, mSize.x, mSize.y, outputFormat.getGLFormatExternal(), outputFormat.getGLType(), buffer);
+        return buffer;
+    }
     @androidx.annotation.NonNull
     @Override
     public String toString() {
