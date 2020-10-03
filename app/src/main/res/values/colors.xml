@@ -3,7 +3,7 @@
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryColored">#6594ff</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#10A5F5</color>
+    <color name="colorAccent">#4b7ae6</color>
     <color name="GreyDis">#555555</color>
     <color name="BlueDis">#4b7ae6</color>
     <color name="Blue">#6594ff</color>
@@ -13,7 +13,11 @@
     <color name="ToolBar">#1c1c1c</color>
     <color name="controlCol">#33000000</color>
     <color name="LauncherBackground">#00000000</color>
-    <color name="colorText">#00DBFF</color>
+    <color name="colorText">#B794F6</color>
     <color name="colorSeparator">#616161</color>
-    <color name="RedGrad">#0859C6</color>
+    <color name="panel_transparency">#40000000</color>
+    <color name="transparent_focus_circle">@color/panel_transparency</color>
+    <color name="white">#FFFFFF</color>
+    <color name="manual_icon_text">@color/white</color>
+    <color name="manual_icon_text_selected">@color/white</color>
 </resources>
